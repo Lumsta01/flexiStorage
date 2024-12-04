@@ -1,0 +1,170 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for Cloud Capstone Project
+
+Globals:
+  Function:
+    Runtime: python3.9
+    MemorySize: 128
+    Timeout: 100
+    Tracing: Active
+
+Resources:
+  MyUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-UserPool
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      MfaConfiguration: 'OFF'
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+          AttributeDataType: String
+
+  MyUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub ${AWS::StackName}-Client
+      UserPoolId: !Ref MyUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      SupportedIdentityProviders:
+        - COGNITO
+      CallbackURLs:
+        - 'https://oauth.pstmn.io/v1/callback'
+      LogoutURLs:
+        - 'http://localhost'
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      AllowedOAuthFlowsUserPoolClient: true
+
+
+  MyUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: capstoneprojectapp
+      UserPoolId: !Ref MyUserPool
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${AWS::StackName}-Users
+      AttributeDefinitions:
+        - AttributeName: userid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userid
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  RestAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt MyUserPool.Arn
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  UsersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: users/users.lambda_handler
+      Environment:
+        Variables:
+          USERS_TABLE: !Ref UsersTable
+
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+              Resource: !GetAtt UsersTable.Arn
+      Events:
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /users
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+        CreateUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /users
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+        UpdateUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /users/{userid}
+            Method: PUT
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /users/{userid}
+            Method: DELETE
+            Auth:
+              Authorizer: CognitoAuthorizer
+
+Outputs:
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref MyUserPool
+
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref MyUserPoolClient
+
+  UserPoolDomainUrl:
+    Description: Cognito User Pool Domain URL
+    Value: !Sub 'https://${MyUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com'
+
+  DomainWellKnownEndpoint:
+    Description: Verify the .well-known configuration endpoint
+    Value: !Sub 'https://${MyUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com/.well-known/openid-configuration'
+
+  UsersTable:
+    Description: DynamoDB Users table
+    Value: !Ref UsersTable
+
+  UsersFunction:
+    Description: Lambda function used to perform actions on the users data
+    Value: !Ref UsersFunction
+
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}
