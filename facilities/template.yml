@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for Facilities Service - Manages storage facilities and their units
+
+Globals:
+  Function:
+    Runtime: python3.9
+    MemorySize: 128
+    Timeout: 100
+    Tracing: Active
+
+Resources:
+  FacilitiesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${AWS::StackName}-Facilities
+      AttributeDefinitions:
+        - AttributeName: facilityId
+          AttributeType: S
+        - AttributeName: location
+          AttributeType: S
+      KeySchema:
+        - AttributeName: facilityId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: LocationIndex
+          KeySchema:
+            - AttributeName: location
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+
+  StorageUnitsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${AWS::StackName}-StorageUnits
+      AttributeDefinitions:
+        - AttributeName: unitId
+          AttributeType: S
+        - AttributeName: facilityId
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: size
+          AttributeType: S
+      KeySchema:
+        - AttributeName: unitId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: FacilityIndex
+          KeySchema:
+            - AttributeName: facilityId
+              KeyType: HASH
+            - AttributeName: status
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: SizeStatusIndex
+          KeySchema:
+            - AttributeName: size
+              KeyType: HASH
+            - AttributeName: status
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+
+  FacilitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: facilities/handler.lambda_handler
+      Environment:
+        Variables:
+          FACILITIES_TABLE: !Ref FacilitiesTable
+          STORAGE_UNITS_TABLE: !Ref StorageUnitsTable
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+                - dynamodb:Query
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+              Resource: 
+                - !GetAtt FacilitiesTable.Arn
+                - !GetAtt StorageUnitsTable.Arn
+                - !Sub ${FacilitiesTable.Arn}/index/*
+                - !Sub ${StorageUnitsTable.Arn}/index/*
+      Events:
+        GetFacilities:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+        GetFacility:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+        CreateFacility:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+        UpdateFacility:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}
+            Method: PUT
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteFacility:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}
+            Method: DELETE
+            Auth:
+              Authorizer: CognitoAuthorizer
+        GetFacilityUnits:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}/units
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+        CreateUnit:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}/units
+            Method: POST
+            Auth:
+              Authorizer: CognitoAuthorizer
+        UpdateUnit:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}/units/{unitId}
+            Method: PUT
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteUnit:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}/units/{unitId}
+            Method: DELETE
+            Auth:
+              Authorizer: CognitoAuthorizer
+        SearchFacilities:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/search
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+        GetAvailableUnits:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestAPI
+            Path: /facilities/{facilityId}/units/available
+            Method: GET
+            Auth:
+              Authorizer: CognitoAuthorizer
+
+Outputs:
+  FacilitiesTable:
+    Description: DynamoDB Facilities table
+    Value: !Ref FacilitiesTable
+
+  StorageUnitsTable:
+    Description: DynamoDB Storage Units table
+    Value: !Ref StorageUnitsTable
+
+  FacilitiesFunction:
+    Description: Lambda function for facilities management
+    Value: !Ref FacilitiesFunction

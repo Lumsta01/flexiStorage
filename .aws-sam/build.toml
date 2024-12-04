@@ -5,7 +5,7 @@ codeuri = "/home/wtc/AWS/jhb2_capstone_project/jhb_2_cloud_capstone_project"
 runtime = "python3.9"
 architecture = "x86_64"
 handler = "src/users/users.lambda_handler"
-manifest_hash = ""
+manifest_hash = "16c0bf33713e866692c8f3d58d296f33"
 packagetype = "Zip"
 functions = ["UsersFunction"]
 
