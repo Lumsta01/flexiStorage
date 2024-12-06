@@ -60,7 +60,7 @@ Resources:
   MyUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: capstoneprojectapp
+      Domain: storageapp
       UserPoolId: !Ref MyUserPool
 
   UsersTable:
@@ -169,20 +169,13 @@ Outputs:
     Description: API Gateway endpoint URL
     Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}
 
-  GetUsersEndpoint:
-    Description: API endpoint to fetch all users
+  GetOrCreateUsersEndpoint:
+    Description: API endpoint to fetch all or create new users
     Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users
 
-  CreateUserEndpoint:
-    Description: API endpoint to create a user
-    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users
-
-  UpdateUserEndpoint:
-    Description: API endpoint to update a user by ID
+  GetUpdateDeleteUserEndpoint:
+    Description: API endpoint to gets,update or deletes a user by ID
     Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users/{userid}
 
-  DeleteUserEndpoint:
-    Description: API endpoint to delete a user by ID
-    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users/{userid}
 
 
