@@ -4,86 +4,75 @@ import os
 import boto3
 from datetime import datetime
 
-# Prepare DynamoDB client
+# DynamoDB Table Setup
 USERS_TABLE = os.getenv('USERS_TABLE', None)
 dynamodb = boto3.resource('dynamodb')
 ddbTable = dynamodb.Table(USERS_TABLE)
 
+# Helper Functions
+
+"""Gets all the users"""
+def get_all_users(event):
+    ddb_response = ddbTable.scan(Select='ALL_ATTRIBUTES')
+    return ddb_response.get('Items', []), 200
+
+"""Gets a specific user"""
+def get_user_by_id(event):
+    userid = event['pathParameters']['userid']
+    ddb_response = ddbTable.get_item(Key={'userid': userid})
+    return ddb_response.get('Item', {}), 200
+
+
+"""Creates a new user"""
+def create_user(event):
+    request_json = json.loads(event['body'])
+    request_json['timestamp'] = datetime.now().isoformat()
+    request_json['userid'] = request_json.get('userid', str(uuid.uuid1()))
+    ddbTable.put_item(Item=request_json)
+    return request_json, 201
+
+
+"""Edits a specific user info"""
+def update_user(event):
+    userid = event['pathParameters']['userid']
+    request_json = json.loads(event['body'])
+    request_json['timestamp'] = datetime.now().isoformat()
+    request_json['userid'] = userid
+    ddbTable.put_item(Item=request_json)
+    return request_json, 200
+
+"""Deletes a specific usse"""
+def delete_user(event):
+    userid = event['pathParameters']['userid']
+    ddbTable.delete_item(Key={'userid': userid})
+    return {}, 204
+
+
+"""invalid request"""
+def unsupported_route(event):
+    return {'Message': 'Unsupported route'}, 400
+
+# Route Mapping
+ROUTES = {
+    'GET /users': get_all_users,
+    'GET /users/{userid}': get_user_by_id,
+    'POST /users': create_user,
+    'PUT /users/{userid}': update_user,
+    'DELETE /users/{userid}': delete_user
+}
+
 def lambda_handler(event, context):
     route_key = f"{event['httpMethod']} {event['resource']}"
-
-    # Set default response, override with data from DynamoDB if any
-    response_body = {'Message': 'Unsupported route'}
-    status_code = 400
-    headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-        }
-
+    handler_function = ROUTES.get(route_key, unsupported_route)
     try:
-        # Get a list of all Users
-        if route_key == 'GET /users':
-            ddb_response = ddbTable.scan(Select='ALL_ATTRIBUTES')
-            # return list of items instead of full DynamoDB response
-            response_body = ddb_response['Items']
-            status_code = 200
-
-        # CRUD operations for a single User
-       
-        # Read a user by ID
-        if route_key == 'GET /users/{userid}':
-            # get data from the database
-            ddb_response = ddbTable.get_item(
-                Key={'userid': event['pathParameters']['userid']}
-            )
-            # return single item instead of full DynamoDB response
-            if 'Item' in ddb_response:
-                response_body = ddb_response['Item']
-            else:
-                response_body = {}
-            status_code = 200
-        
-        # Delete a user by ID
-        if route_key == 'DELETE /users/{userid}':
-            # delete item in the database
-            ddbTable.delete_item(
-                Key={'userid': event['pathParameters']['userid']}
-            )
-            response_body = {}
-            status_code = 200
-        
-        # Create a new user 
-        if route_key == 'POST /users':
-            request_json = json.loads(event['body'])
-            request_json['timestamp'] = datetime.now().isoformat()
-            # generate unique id if it isn't present in the request
-            if 'userid' not in request_json:
-                request_json['userid'] = str(uuid.uuid1())
-            # update the database
-            ddbTable.put_item(
-                Item=request_json
-            )
-            response_body = request_json
-            status_code = 200
-
-        # Update a specific user by ID
-        if route_key == 'PUT /users/{userid}':
-            # update item in the database
-            request_json = json.loads(event['body'])
-            request_json['timestamp'] = datetime.now().isoformat()
-            request_json['userid'] = event['pathParameters']['userid']
-            # update the database
-            ddbTable.put_item(
-                Item=request_json
-            )
-            response_body = request_json
-            status_code = 200
+        response_body, status_code = handler_function(event)
     except Exception as err:
-        status_code = 400
-        response_body = {'Error:': str(err)}
-        print(str(err))
+        response_body, status_code = {'Error': str(err)}, 500
     return {
         'statusCode': status_code,
         'body': json.dumps(response_body),
-        'headers': headers
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        }
     }

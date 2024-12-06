@@ -92,7 +92,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./
-      Handler: users/users.lambda_handler
+      Handler: users.lambda_handler
       Environment:
         Variables:
           USERS_TABLE: !Ref UsersTable
@@ -168,3 +168,21 @@ Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL
     Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}
+
+  GetUsersEndpoint:
+    Description: API endpoint to fetch all users
+    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users
+
+  CreateUserEndpoint:
+    Description: API endpoint to create a user
+    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users
+
+  UpdateUserEndpoint:
+    Description: API endpoint to update a user by ID
+    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users/{userid}
+
+  DeleteUserEndpoint:
+    Description: API endpoint to delete a user by ID
+    Value: !Sub https://${RestAPI}.execute-api.${AWS::Region}.amazonaws.com/${RestAPI.Stage}/users/{userid}
+
+
