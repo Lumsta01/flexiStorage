@@ -19,11 +19,11 @@ def image_to_base64(image_path):
 
 """ Functions to generate random facilities with base64 image"""
 def generate_facility_locker():
-    locker_facility_name = random.sample([
+    locker_facility_name = random.choice([
     "SecureVault", "EasyStore Locker", "SafeKeep Locker", "QuickLock", 
     "The Locker Zone", "Locker Haven", "SwiftVault", "LockBox Express", 
     "SecureStash", "FlexiLock"
-    ],k=10)
+    ])
     location = random.choice([
     "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", 
     "Bloemfontein", "East London", "Polokwane", "Nelspruit", "Kimberley", 
@@ -62,11 +62,11 @@ def generate_facility_locker():
 
     
 def generate_facility_garage():
-    garage_facility_name = random.sample([
+    garage_facility_name = random.choice([
     "GarageXpress", "ParkEase Garage", "SecurePark", "CityGarage Hub", 
     "AutoSecure Garage", "ParkGuard Garage", "DriveSafe Garage", "UrbanPark Garage", 
     "SafePark Storage", "The Garage Spot"
-    ],k=10)
+    ])
     location = random.choice([
     "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", 
     "Bloemfontein", "East London", "Polokwane", "Nelspruit", "Kimberley", 
@@ -105,11 +105,11 @@ def generate_facility_garage():
 
 
 def generate_facility_storage_unit():
-    storage_unit_facility_name = random.sample([
+    storage_unit_facility_name = random.choice([
     "StorEase Unit", "The Storage Cube", "SpaceSaver Unit", "BoxedUp Storage", 
     "FlexiSpace Units", "StoreMore Unit", "VaultSafe Storage", "EasyStorage Unit", 
     "MaxSpace Unit", "StorPro Unit"
-    ],k=10)
+    ])
     location = random.choice([
     "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", 
     "Bloemfontein", "East London", "Polokwane", "Nelspruit", "Kimberley", 
@@ -147,12 +147,12 @@ def generate_facility_storage_unit():
 
 
 def generate_facility_warehouse():
-    warehouse_facility_name = random.sample([
+    warehouse_facility_name = random.choice([
     "MegaStorage Warehouse", "ProStore Warehouse", "SecureStock Warehouse", 
     "VaultSpace Warehouse", "RapidStore Warehouse", "The Warehouse Hub", 
     "FlexiStore Warehouse", "StockPoint Warehouse", "MaxiStor Warehouse", 
     "SupplyHub Warehouse"
-    ], k=10)
+    ])
 
     location = random.choice([
     "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", 

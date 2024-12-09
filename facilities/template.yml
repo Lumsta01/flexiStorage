@@ -15,6 +15,33 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: storage-facilities-images-2024
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "*"
+            AllowedMethods:
+              - GET
+            AllowedHeaders:
+              - "*"
+      PublicAccessBlockConfiguration: 
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+    DeletionPolicy: Retain
+
+  StorageFacilitiesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StorageFacilitiesBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${StorageFacilitiesBucket}/*"
 
   StorageFacilitiesTable:
     Type: AWS::DynamoDB::Table
@@ -80,6 +107,13 @@ Resources:
             Path: /facilities/{facility_id}
             Method: DELETE
 
+        FacilitiesOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FacilitiesApi
+            Path: /facilities/{facility_id}
+            Method: OPTIONS
+
   FacilitiesApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -102,7 +136,6 @@ Outputs:
     Description: API Gateway endpoint URL for DELETE /facilities/{facility_id}
     Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/prod/facilities/{facility_id}'
   
-
   StorageFacilitiesTable:
     Description: DynamoDB Storage Facilities Table
     Value: !Ref StorageFacilitiesTable

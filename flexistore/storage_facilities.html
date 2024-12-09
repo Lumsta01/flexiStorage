@@ -58,28 +58,90 @@
             </div>
 
             <!-- Storage Facilities List -->
-            <div class="space-y-4">
-                <div class="border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-800">Storage Facility 1</h3>
-                    <p class="text-gray-600">Location: Downtown</p>
-                    <p class="text-gray-600">Type: Storage Unit</p>
-                    <p class="text-gray-600">Available: Yes</p>
-                    <button class="btn-primary w-full mt-4" onclick="window.location.href='/book?facility=1'">Book Now</button>
-                </div>
-
-                <div class="border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-800">Storage Facility 2</h3>
-                    <p class="text-gray-600">Location: Suburbs</p>
-                    <p class="text-gray-600">Type: Locker</p>
-                    <p class="text-gray-600">Available: Yes</p>
-                    <button class="btn-primary w-full mt-4" onclick="window.location.href='/book?facility=2'">Book Now</button>
-                </div>
+            <div class="space-y-4" id="facilities-list">
+                <!-- Facilities will be dynamically added here -->
+            </div>
+            
 
                 <!-- More storage facilities can be added here in a similar structure -->
             </div>
 
         </div>
     </div>
+
+    <script>
+    const facilitiesList = document.getElementById('facilities-list'); // Select the facilities list container
+    
+    // Fetch facilities data
+    function fetchFacilities(location = '', type = '') {
+        let url = 'https://b9mdnewkzk.execute-api.eu-west-1.amazonaws.com/prod/facilities';
+        if (location || type) {
+            url += `?location=${location}&type=${type}`;
+        }
+
+        console.log('Fetching data from:', url); // Debugging: check the URL
+
+        fetch(url)
+            .then(response => response.json())
+            .then(facilities => {
+                console.log('Facilities Data:', facilities); // Debugging: check what data we received
+                renderFacilities(facilities);  // Call the render function after fetching data
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    // Render facilities in the UI
+    function renderFacilities(facilities) {
+        console.log('Rendering Facilities:', facilities); // Debugging: check the facilities being passed to the render function
+        
+        facilitiesList.innerHTML = ''; // Clear the list before adding new facilities
+
+        if (!facilities || facilities.length === 0) {
+            facilitiesList.innerHTML = '<p class="text-gray-500">No facilities found.</p>';
+            return;
+        }
+
+        facilities.forEach(facility => {
+            const facilityElement = document.createElement('div');
+            facilityElement.className = 'border-b pb-4';
+
+            facilityElement.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-800">${facility.facility_name}</h3>
+                <p class="text-gray-600">Location: ${facility.location}</p>
+                <p class="text-gray-600">Type: ${facility.type}</p>
+                <p class="text-gray-600">Capacity: ${facility.capacity}</p>
+                <p class="text-gray-600">Description: ${facility.description}</p>
+                <img src="${facility.image_url}" alt="${facility.facility_name}" class="w-full h-40 object-cover mt-4">
+                <button class="btn-primary w-full mt-4" onclick="bookFacility('${facility.facility_id}')">Book Now</button>
+            `;
+
+            facilitiesList.appendChild(facilityElement);
+        });
+    }
+
+    // Handle booking (you can expand this based on your requirements)
+    function bookFacility(facilityId) {
+        alert(`Booking facility with ID: ${facilityId}`);
+        // Redirect or send booking request
+    }
+
+    // Listen to form submission for filters
+    document.querySelector("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const location = document.getElementById("location").value;
+        const type = document.getElementById("type").value;
+
+        console.log('Filter Applied:', { location, type }); // Debugging: check filter values
+        fetchFacilities(location, type);
+    });
+
+    // Initial fetch of all facilities
+    fetchFacilities();
+</script>
+
 
 </body>
 </html>
