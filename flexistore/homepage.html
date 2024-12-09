@@ -24,42 +24,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 164, 189, 0.3);
         }
-
-        .feature-card {
-            border-radius: 1rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(0, 164, 189, 0.1), rgba(69, 217, 168, 0.1));
-        }
-
-        .how-it-works-step {
-            position: relative;
-        }
-
-        .how-it-works-step::after {
-            content: '';
-            position: absolute;
-            top: 2.5rem;
-            right: -1rem;
-            width: 2rem;
-            height: 2px;
-            background: var(--primary);
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            .how-it-works-step:not(:last-child)::after {
-                display: block;
-            }
-        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -98,19 +62,10 @@
                 <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
                     Find the perfect storage solution for your needs with our seamless booking system and professional packing services.
                 </p>
-                <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" placeholder="Enter your location" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                        <select class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                            <option value="">Select Storage Type</option>
-                            <option value="locker">Locker</option>
-                            <option value="unit">Storage Unit</option>
-                            <option value="garage">Garage</option>
-                            <option value="warehouse">Warehouse</option>
-                        </select>
-                        <button class="btn-primary w-full">Find Storage</button>
-                    </div>
-                </div>
+                <!-- Link to Facilities Page -->
+                <a href="storage_facilities.html">
+                    <button class="btn-primary w-full">Find Storage</button>
+                </a>
             </div>
         </div>
     </section>
@@ -120,6 +75,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose FlexiStore?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature Cards -->
                 <div class="feature-card p-6 text-center">
                     <div class="bg-primary bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,26 +85,7 @@
                     <h3 class="text-xl font-semibold mb-3">Secure Booking</h3>
                     <p class="text-gray-600">Easy online booking system with secure payment options</p>
                 </div>
-
-                <div class="feature-card p-6 text-center">
-                    <div class="bg-primary bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3">Professional Packing</h3>
-                    <p class="text-gray-600">Expert packing service to ensure your items are stored safely</p>
-                </div>
-
-                <div class="feature-card p-6 text-center">
-                    <div class="bg-primary bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3">24/7 Access</h3>
-                    <p class="text-gray-600">Access your storage unit whenever you need, day or night</p>
-                </div>
+                <!-- Add more feature cards as needed -->
             </div>
         </div>
     </section>
@@ -158,6 +95,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Steps for how it works -->
                 <div class="how-it-works-step text-center">
                     <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                         <span class="text-2xl font-bold text-primary">1</span>
@@ -165,81 +103,21 @@
                     <h3 class="text-lg font-semibold mb-2">Search</h3>
                     <p class="text-gray-600">Find storage near you</p>
                 </div>
-
-                <div class="how-it-works-step text-center">
-                    <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <span class="text-2xl font-bold text-primary">2</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mb-2">Book</h3>
-                    <p class="text-gray-600">Reserve your space</p>
-                </div>
-
-                <div class="how-it-works-step text-center">
-                    <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <span class="text-2xl font-bold text-primary">3</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mb-2">Pack</h3>
-                    <p class="text-gray-600">We pack your items</p>
-                </div>
-
-                <div class="how-it-works-step text-center">
-                    <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <span class="text-2xl font-bold text-primary">4</span>
-                    </div>
-                    <h3 class="text-lg font-semibold mb-2">Store</h3>
-                    <p class="text-gray-600">Secure storage begins</p>
-                </div>
+                <!-- Add more steps as needed -->
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-12 text-center text-white">
-                <h2 class="text-3xl font-bold mb-4">Ready to Start Storing?</h2>
-                <p class="text-xl mb-8">Join thousands of satisfied customers who trust FlexiStore</p>
-                <button class="bg-white text-primary font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors">
-                    Get Started Now
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
+    <!-- Footer Section -->
     <footer class="bg-gray-900 text-gray-300 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Footer Links -->
                 <div>
                     <img src="/home/luluma/Downloads/flex.png" alt="FlexiStore Logo" class="h-8 mb-4">
                     <p class="text-sm">Package, Book, and Store with Ease</p>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white">Home</a></li>
-                        <li><a href="#" class="hover:text-white">Services</a></li>
-                        <li><a href="#" class="hover:text-white">About Us</a></li>
-                        <li><a href="#" class="hover:text-white">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Storage Types</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white">Lockers</a></li>
-                        <li><a href="#" class="hover:text-white">Storage Units</a></li>
-                        <li><a href="#" class="hover:text-white">Garages</a></li>
-                        <li><a href="#" class="hover:text-white">Warehouses</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li>Email: info@flexistore.com</li>
-                        <li>Phone: (123) 456-7890</li>
-                        <li>Address: 123 Storage Street</li>
-                    </ul>
-                </div>
+                <!-- Add more footer sections as needed -->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center">
                 <p>&copy; 2024 FlexiStore. All rights reserved.</p>

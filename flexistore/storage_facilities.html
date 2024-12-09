@@ -35,7 +35,7 @@
 
             <!-- Filter Form -->
             <div class="mb-6">
-                <form action="/facilities" method="GET">
+                <form id="filter-form">
                     <div class="flex space-x-4">
                         <div class="w-full">
                             <label for="location" class="block text-gray-700">Location</label>
@@ -54,6 +54,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn-primary w-full mt-4">Apply Filters</button>
+                    <button type="button" id="clear-filters" class="btn-primary w-full mt-4">Clear Filters</button>
                 </form>
             </div>
 
@@ -61,31 +62,25 @@
             <div class="space-y-4" id="facilities-list">
                 <!-- Facilities will be dynamically added here -->
             </div>
-            
-
-                <!-- More storage facilities can be added here in a similar structure -->
-            </div>
 
         </div>
     </div>
 
     <script>
+    let allFacilities = []; // This will store all fetched facilities
     const facilitiesList = document.getElementById('facilities-list'); // Select the facilities list container
-    
-    // Fetch facilities data
-    function fetchFacilities(location = '', type = '') {
-        let url = 'https://b9mdnewkzk.execute-api.eu-west-1.amazonaws.com/prod/facilities';
-        if (location || type) {
-            url += `?location=${location}&type=${type}`;
-        }
 
+    // Fetch facilities data once when the page loads
+    function fetchFacilities() {
+        const url = 'https://b9mdnewkzk.execute-api.eu-west-1.amazonaws.com/prod/facilities';
         console.log('Fetching data from:', url); // Debugging: check the URL
 
         fetch(url)
             .then(response => response.json())
             .then(facilities => {
-                console.log('Facilities Data:', facilities); // Debugging: check what data we received
-                renderFacilities(facilities);  // Call the render function after fetching data
+                console.log('Facilities Data:', facilities); // Debugging: check the data received
+                allFacilities = facilities;  // Store all facilities
+                renderFacilities(allFacilities);  // Render all facilities initially
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -94,8 +89,8 @@
 
     // Render facilities in the UI
     function renderFacilities(facilities) {
-        console.log('Rendering Facilities:', facilities); // Debugging: check the facilities being passed to the render function
-        
+        console.log('Rendering Facilities:', facilities); // Debugging: check the facilities passed to render
+
         facilitiesList.innerHTML = ''; // Clear the list before adding new facilities
 
         if (!facilities || facilities.length === 0) {
@@ -127,21 +122,41 @@
         // Redirect or send booking request
     }
 
+    // Apply filters to the displayed facilities
+    function applyFilters() {
+        const location = document.getElementById("location").value.toLowerCase();
+        const type = document.getElementById("type").value.toLowerCase();
+
+        const filteredFacilities = allFacilities.filter(facility => {
+            const matchesLocation = location ? facility.location.toLowerCase().includes(location) : true;
+            const matchesType = type ? facility.type.toLowerCase() === type : true;
+            return matchesLocation && matchesType;
+        });
+
+        renderFacilities(filteredFacilities); // Render the filtered facilities
+    }
+
+    // Clear filters and reset the list
+    function clearFilters() {
+        document.getElementById("location").value = '';
+        document.getElementById("type").value = '';
+        renderFacilities(allFacilities); // Reset to show all facilities
+    }
+
     // Listen to form submission for filters
-    document.querySelector("form").addEventListener("submit", (event) => {
+    document.getElementById("filter-form").addEventListener("submit", (event) => {
         event.preventDefault();
+        applyFilters();
+    });
 
-        const location = document.getElementById("location").value;
-        const type = document.getElementById("type").value;
-
-        console.log('Filter Applied:', { location, type }); // Debugging: check filter values
-        fetchFacilities(location, type);
+    // Listen to the clear filters button
+    document.getElementById("clear-filters").addEventListener("click", () => {
+        clearFilters();
     });
 
     // Initial fetch of all facilities
     fetchFacilities();
-</script>
-
+    </script>
 
 </body>
 </html>
