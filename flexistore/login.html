@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FlexiStore</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A4BD;
+            --secondary: #45D9A8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 164, 189, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Section -->
+    <section class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+            <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Log in to FlexiStore</h1>
+            <form action="/login" method="POST" class="space-y-6">
+                <!-- Email Input -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                </div>
+
+                <!-- Password Input -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="btn-primary w-full">Log In</button>
+                </div>
+            </form>
+            
+            <!-- Links -->
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-600">
+                    <p class="text-center text-gray-600 mt-4">Don't have an account?  <a href="signup.html" class="text-blue-500">Sign Up</a></p>
+                </p>
+                <p class="text-sm text-gray-600">
+                    Forgot your password? 
+                    <a href="forgot-password.html" class="text-primary font-medium hover:underline">Reset Password</a>
+                </p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

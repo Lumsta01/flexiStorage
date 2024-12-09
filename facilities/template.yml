@@ -11,6 +11,11 @@ Globals:
     Tracing: Active
 
 Resources:
+  StorageFacilitiesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: storage-facilities-images-2024
+
   StorageFacilitiesTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -31,6 +36,7 @@ Resources:
       Environment:
         Variables:
           FACILITIES_TABLE: !Ref StorageFacilitiesTable
+          S3_BUCKET_NAME: !Ref StorageFacilitiesBucket
       Policies:
         - Statement:
             - Effect: Allow
@@ -40,6 +46,14 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:DeleteItem
               Resource: !GetAtt StorageFacilitiesTable.Arn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:ListBucket
+              Resource:
+                - !Sub arn:aws:s3:::${StorageFacilitiesBucket}
+                - !Sub arn:aws:s3:::${StorageFacilitiesBucket}/*
       Events:
         GetFacilities:
           Type: Api
@@ -53,6 +67,18 @@ Resources:
             RestApiId: !Ref FacilitiesApi
             Path: /facilities/search
             Method: GET
+        StorageFacilitiesPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FacilitiesApi
+            Path: /facilities
+            Method: POST
+        DeleteFacility:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FacilitiesApi
+            Path: /facilities/{facility_id}
+            Method: DELETE
 
   FacilitiesApi:
     Type: AWS::Serverless::Api
@@ -66,11 +92,16 @@ Resources:
 Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL
-    Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/${FacilitiesApi.Stage}'
+    Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
 
   getFacilitiesApiEndpoint:
     Description: API Gateway endpoint URL
-    Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/${FacilitiesApi.Stage}/facilities'
+    Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/prod/facilities'
+
+  deleteFacilityApiEndpoint:
+    Description: API Gateway endpoint URL for DELETE /facilities/{facility_id}
+    Value: !Sub 'https://${FacilitiesApi}.execute-api.${AWS::Region}.amazonaws.com/prod/facilities/{facility_id}'
+  
 
   StorageFacilitiesTable:
     Description: DynamoDB Storage Facilities Table
@@ -79,3 +110,11 @@ Outputs:
   StorageFacilitiesFunction:
     Description: Lambda Function for Storage Facilities
     Value: !Ref StorageFacilitiesFunction
+
+  S3BucketName:
+    Description: "S3 bucket where images are stored"
+    Value: !Ref StorageFacilitiesBucket
+
+  S3BucketURL:
+    Description: "URL of the S3 bucket"
+    Value: !Sub "https://s3.amazonaws.com/${StorageFacilitiesBucket}"

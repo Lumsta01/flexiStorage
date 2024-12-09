@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Facilities</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A4BD;
+            --secondary: #45D9A8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 164, 189, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="min-h-screen flex justify-center items-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+
+            <h2 class="text-center text-2xl font-semibold text-gray-800 mb-6">Available Storage Facilities</h2>
+
+            <!-- Filter Form -->
+            <div class="mb-6">
+                <form action="/facilities" method="GET">
+                    <div class="flex space-x-4">
+                        <div class="w-full">
+                            <label for="location" class="block text-gray-700">Location</label>
+                            <input type="text" id="location" name="location" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter Location">
+                        </div>
+
+                        <div class="w-full">
+                            <label for="type" class="block text-gray-700">Storage Type</label>
+                            <select id="type" name="type" class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option value="">Select Type</option>
+                                <option value="locker">Locker</option>
+                                <option value="storage unit">Storage Unit</option>
+                                <option value="garage">Garage</option>
+                                <option value="warehouse">Warehouse</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary w-full mt-4">Apply Filters</button>
+                </form>
+            </div>
+
+            <!-- Storage Facilities List -->
+            <div class="space-y-4">
+                <div class="border-b pb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Storage Facility 1</h3>
+                    <p class="text-gray-600">Location: Downtown</p>
+                    <p class="text-gray-600">Type: Storage Unit</p>
+                    <p class="text-gray-600">Available: Yes</p>
+                    <button class="btn-primary w-full mt-4" onclick="window.location.href='/book?facility=1'">Book Now</button>
+                </div>
+
+                <div class="border-b pb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Storage Facility 2</h3>
+                    <p class="text-gray-600">Location: Suburbs</p>
+                    <p class="text-gray-600">Type: Locker</p>
+                    <p class="text-gray-600">Available: Yes</p>
+                    <button class="btn-primary w-full mt-4" onclick="window.location.href='/book?facility=2'">Book Now</button>
+                </div>
+
+                <!-- More storage facilities can be added here in a similar structure -->
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
