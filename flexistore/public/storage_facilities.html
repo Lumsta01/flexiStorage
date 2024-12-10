@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Facilities</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A4BD;
+            --secondary: #45D9A8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 164, 189, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="min-h-screen flex justify-center items-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+
+            <h2 class="text-center text-2xl font-semibold text-gray-800 mb-6">Available Storage Facilities</h2>
+
+            <!-- Filter Form -->
+            <div class="mb-6">
+                <form id="filter-form">
+                    <div class="flex space-x-4">
+                        <div class="w-full">
+                            <label for="location" class="block text-gray-700">Location</label>
+                            <input type="text" id="location" name="location" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter Location">
+                        </div>
+
+                        <div class="w-full">
+                            <label for="type" class="block text-gray-700">Storage Type</label>
+                            <select id="type" name="type" class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option value="">Select Type</option>
+                                <option value="locker">Locker</option>
+                                <option value="storage unit">Storage Unit</option>
+                                <option value="garage">Garage</option>
+                                <option value="warehouse">Warehouse</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary w-full mt-4">Apply Filters</button>
+                    <button type="button" id="clear-filters" class="btn-primary w-full mt-4">Clear Filters</button>
+                </form>
+            </div>
+
+            <!-- Storage Facilities List -->
+            <div class="space-y-4" id="facilities-list">
+                <!-- Facilities will be dynamically added here -->
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    let allFacilities = []; // This will store all fetched facilities
+    const facilitiesList = document.getElementById('facilities-list'); // Select the facilities list container
+
+    // Fetch facilities data once when the page loads
+    function fetchFacilities() {
+        const url = 'https://b9mdnewkzk.execute-api.eu-west-1.amazonaws.com/prod/facilities';
+        console.log('Fetching data from:', url); // Debugging: check the URL
+
+        fetch(url)
+            .then(response => response.json())
+            .then(facilities => {
+                console.log('Facilities Data:', facilities); // Debugging: check the data received
+                allFacilities = facilities;  // Store all facilities
+                renderFacilities(allFacilities);  // Render all facilities initially
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    // Render facilities in the UI
+    function renderFacilities(facilities) {
+        console.log('Rendering Facilities:', facilities); // Debugging: check the facilities passed to render
+    
+        facilitiesList.innerHTML = ''; // Clear the list before adding new facilities
+    
+        if (!facilities || facilities.length === 0) {
+            facilitiesList.innerHTML = '<p class="text-gray-500">No facilities found.</p>';
+            return;
+        }
+    
+        facilities.forEach(facility => {
+            const facilityElement = document.createElement('div');
+            facilityElement.className = 'border-b pb-4';
+    
+            facilityElement.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-800">${facility.facility_name}</h3>
+                <p class="text-gray-600">Location: ${facility.location}</p>
+                <p class="text-gray-600">Type: ${facility.type}</p>
+                <p class="text-gray-600">Capacity: ${facility.capacity}</p>
+                <p class="text-gray-600">Price: R${facility.price}</p>
+                <p class="text-gray-600">Description: ${facility.description}</p>
+                <img src="${facility.image_url}" alt="${facility.facility_name}" class="w-full h-40 object-cover mt-4">
+                <button class="btn-primary w-full mt-4" onclick="bookFacility('${facility.facility_id}')">Book Now</button>
+            `;
+    
+            facilitiesList.appendChild(facilityElement);
+        });
+    }
+    
+    // Handle booking (you can expand this based on your requirements)
+    function bookFacility(facilityId) {
+        alert(`Booking facility with ID: ${facilityId}`);
+        // Redirect or send booking request
+    }
+
+    // Apply filters to the displayed facilities
+    function applyFilters() {
+        const location = document.getElementById("location").value.toLowerCase();
+        const type = document.getElementById("type").value.toLowerCase();
+
+        const filteredFacilities = allFacilities.filter(facility => {
+            const matchesLocation = location ? facility.location.toLowerCase().includes(location) : true;
+            const matchesType = type ? facility.type.toLowerCase() === type : true;
+            return matchesLocation && matchesType;
+        });
+
+        renderFacilities(filteredFacilities); // Render the filtered facilities
+    }
+
+    // Clear filters and reset the list
+    function clearFilters() {
+        document.getElementById("location").value = '';
+        document.getElementById("type").value = '';
+        renderFacilities(allFacilities); // Reset to show all facilities
+    }
+
+    // Listen to form submission for filters
+    document.getElementById("filter-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        applyFilters();
+    });
+
+    // Listen to the clear filters button
+    document.getElementById("clear-filters").addEventListener("click", () => {
+        clearFilters();
+    });
+
+    // Initial fetch of all facilities
+    fetchFacilities();
+    </script>
+
+</body>
+</html>

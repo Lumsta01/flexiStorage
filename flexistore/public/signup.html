@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FlexiStore</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A4BD;
+            --secondary: #45D9A8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 164, 189, 0.3);
+        }
+
+        /* Custom form styles */
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        .form-container input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .form-container a {
+            color: var(--primary);
+        }
+
+        .form-container a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="form-container">
+        <h2 class="text-2xl font-semibold text-gray-800">Sign Up for FlexiStore</h2>
+
+        <!-- Button to redirect to Cognito sign-up page -->
+        <a href="https://storageapp.auth.eu-west-1.amazoncognito.com/login?client_id=7blsohr6arol471kd8a5kc7ui4&response_type=token&scope=email+openid+profile&redirect_uri=https%3A%2F%2Foauth.pstmn.io%2Fv1%2Fcallback" class="btn-primary w-full">
+            Sign Up with Cognito
+        </a>
+
+        <p class="text-center text-gray-600 mt-4">Already have an account? <a href="login.html" class="text-blue-500">Log In</a></p>
+
+        <!-- Terms and Conditions link moved here -->
+        <footer class="text-center mt-4 text-sm text-gray-600">
+            <p>By signing up, you agree to our <a href="#" class="text-blue-500">Terms & Conditions</a></p>
+        </footer>
+    </div>
+</body>
+</html>
