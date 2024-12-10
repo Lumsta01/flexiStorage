@@ -90,32 +90,33 @@
     // Render facilities in the UI
     function renderFacilities(facilities) {
         console.log('Rendering Facilities:', facilities); // Debugging: check the facilities passed to render
-
+    
         facilitiesList.innerHTML = ''; // Clear the list before adding new facilities
-
+    
         if (!facilities || facilities.length === 0) {
             facilitiesList.innerHTML = '<p class="text-gray-500">No facilities found.</p>';
             return;
         }
-
+    
         facilities.forEach(facility => {
             const facilityElement = document.createElement('div');
             facilityElement.className = 'border-b pb-4';
-
+    
             facilityElement.innerHTML = `
                 <h3 class="text-xl font-semibold text-gray-800">${facility.facility_name}</h3>
                 <p class="text-gray-600">Location: ${facility.location}</p>
                 <p class="text-gray-600">Type: ${facility.type}</p>
                 <p class="text-gray-600">Capacity: ${facility.capacity}</p>
+                <p class="text-gray-600">Price: R${facility.price}</p>
                 <p class="text-gray-600">Description: ${facility.description}</p>
                 <img src="${facility.image_url}" alt="${facility.facility_name}" class="w-full h-40 object-cover mt-4">
                 <button class="btn-primary w-full mt-4" onclick="bookFacility('${facility.facility_id}')">Book Now</button>
             `;
-
+    
             facilitiesList.appendChild(facilityElement);
         });
     }
-
+    
     // Handle booking (you can expand this based on your requirements)
     function bookFacility(facilityId) {
         alert(`Booking facility with ID: ${facilityId}`);

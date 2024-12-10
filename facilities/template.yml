@@ -144,6 +144,12 @@ Outputs:
     Description: Lambda Function for Storage Facilities
     Value: !Ref StorageFacilitiesFunction
 
+  StorageFacilitiesTable:
+    Description: DynamoDB Storage Facilities Table
+    Value: !Ref StorageFacilitiesTable
+    Export:
+      Name: FacilitiesTableName
+
   S3BucketName:
     Description: "S3 bucket where images are stored"
     Value: !Ref StorageFacilitiesBucket

@@ -36,6 +36,7 @@ def create_cors_response(status_code, body):
         },
         'body': json.dumps(convert_decimal(body)) if body else ''
     }
+    
 
 def lambda_handler(event, context):
     # Handle OPTIONS requests for CORS preflight
@@ -108,6 +109,7 @@ def add_facility(event):
         facility_type = body['type']
         image_data = body['image']
         capacity = body['capacity']
+        price = body['price']  # Add this line
         description = body.get('description', '')
 
         image_url = save_image_to_s3(image_data, facility_name)
@@ -121,6 +123,7 @@ def add_facility(event):
                 'type': facility_type,
                 'image_url': image_url,
                 'capacity': capacity,
+                'price': price,
                 'description': description 
             }
         )

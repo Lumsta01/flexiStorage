@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Payment Stack for Storage Facilities Application
+
+Resources:
+  PaymentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${AWS::StackName}-Payments
+      AttributeDefinitions:
+        - AttributeName: payment_id
+          AttributeType: S
+        - AttributeName: facility_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: payment_id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: FacilityIdIndex
+          KeySchema:
+            - AttributeName: facility_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  ProcessPaymentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: payment_handler.process_payment
+      Runtime: python3.9
+      Environment:
+        Variables:
+          PAYMENTS_TABLE: !Ref PaymentsTable
+          FACILITIES_TABLE: !ImportValue FacilitiesTableName
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PaymentsTable
+        - DynamoDBReadPolicy:
+            TableName: !ImportValue FacilitiesTableName
+      Events:
+        CreatePayment:
+          Type: Api
+          Properties:
+            Path: /payments
+            Method: POST
+
+  GetPaymentsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: payment_handler.get_payments
+      Runtime: python3.9
+      Environment:
+        Variables:
+          PAYMENTS_TABLE: !Ref PaymentsTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref PaymentsTable
+      Events:
+        GetPayments:
+          Type: Api
+          Properties:
+            Path: /payments
+            Method: GET
+
+Outputs:
+  PaymentsTableName:
+    Description: DynamoDB Payments Table Name
+    Value: !Ref PaymentsTable
+    Export:
+      Name: PaymentsTableName
+
+  PaymentsApiEndpoint:
+    Description: API Gateway Endpoint for Payments
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/payments'

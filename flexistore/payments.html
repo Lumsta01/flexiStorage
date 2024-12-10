@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Payment</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">Make a Payment</h2>
+
+        <form id="payment-form">
+            <div class="mb-4">
+                <label for="facility_id" class="block text-gray-700">Facility ID</label>
+                <input type="text" id="facility_id" name="facility_id" 
+                       class="w-full p-3 border border-gray-300 rounded-lg" 
+                       placeholder="Enter Facility ID" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="amount" class="block text-gray-700">Amount (ZAR)</label>
+                <input type="number" id="amount" name="amount" 
+                       class="w-full p-3 border border-gray-300 rounded-lg" 
+                       placeholder="Enter Amount" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="payment_method" class="block text-gray-700">Payment Method</label>
+                <select id="payment_method" name="payment_method" 
+                        class="w-full p-3 border border-gray-300 rounded-lg" required>
+                    <option value="credit_card">Credit Card</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                </select>
+            </div>
+
+            <button type="submit" class="bg-blue-500 text-white py-3 px-6 w-full rounded-lg hover:bg-blue-600">
+                Pay Now
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // AWS API Endpoint
+        const apiEndpoint = 'https://<your-api-id>.execute-api.<region>.amazonaws.com/Prod/payments';
+
+        // Handle form submission
+        document.getElementById('payment-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const facilityId = document.getElementById('facility_id').value;
+            const amount = document.getElementById('amount').value;
+            const paymentMethod = document.getElementById('payment_method').value;
+
+            // Construct payment data
+            const paymentData = {
+                facility_id: facilityId,
+                amount: parseFloat(amount), // Ensure numeric value
+                payment_method: paymentMethod,
+            };
+
+            try {
+                // Send POST request to the API
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paymentData),
+                });
+
+                const responseData = await response.json();
+                if (response.ok) {
+                    alert(`Payment successful! Payment ID: ${responseData.payment_id}`);
+                } else {
+                    alert(`Error: ${responseData.message || 'Something went wrong'}`);
+                }
+            } catch (error) {
+                console.error('Payment Error:', error);
+                alert('Failed to process the payment. Please try again later.');
+            }
+        });
+    </script>
+
+</body>
+</html>

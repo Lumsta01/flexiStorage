@@ -43,6 +43,7 @@ def generate_facility_locker():
     "Convenient and accessible storage for all your needs.",
     "Keep your valuables safe with top-notch security features."
     ])
+    price = random.choice([50, 70, 90, 110, 130, 150, 170, 190, 210, 230] )
 
     # Get a random image from the folder
     random_image_filename = random.choice(os.listdir(locker_folder))
@@ -54,6 +55,7 @@ def generate_facility_locker():
         'location': location,
         'type': facility_type,
         'capacity': capacity,
+        'price': price,
         'description': description,
         'image': image_data  # base64 encoded image data
     }
@@ -86,6 +88,7 @@ def generate_facility_garage():
     "A multi-purpose garage for both storage and vehicle parking.",
     "Keep your vehicles and tools safe with 24/7 security features."
     ])
+    price = random.choice([800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250] )
 
     # Get a random image from the folder
     random_image_filename = random.choice(os.listdir(garage_forlder))
@@ -97,6 +100,7 @@ def generate_facility_garage():
         'location': location,
         'type': facility_type,
         'capacity': capacity,
+        'price': price,
         'description': description,
         'image': image_data  # base64 encoded image data
     }
@@ -129,6 +133,7 @@ def generate_facility_storage_unit():
     "Safe, clean, and spacious, designed to keep your items organized.",
     "A premium storage solution for both personal and business needs."
     ])
+    price = random.choice([300, 350, 400, 450, 500, 550, 600, 650, 700, 750])
 
     # Get a random image from the folder
     random_image_filename = random.choice(os.listdir(storage_unit_folder))
@@ -140,6 +145,7 @@ def generate_facility_storage_unit():
         'location': location,
         'type': facility_type,
         'capacity': capacity,
+        'price': price,
         'description': description,
         'image': image_data  # base64 encoded image data
     }
@@ -174,6 +180,7 @@ def generate_facility_warehouse():
     "A robust warehouse with advanced security and monitoring systems.",
     "Efficient storage and distribution space for businesses of all sizes."
     ]) # Random description
+    price = random.choice([1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400])
 
     # Get a random image from the folder
     random_image_filename = random.choice(os.listdir(warehouse_folder))
@@ -185,12 +192,13 @@ def generate_facility_warehouse():
         'location': location,
         'type': facility_type,
         'capacity': capacity,
+        'price': price,
         'description': description,
         'image': image_data  # base64 encoded image data
     }
     return facility
 
-for _ in range(5):  # Create 5 random facilities
+for _ in range(10):  # Create 5 random facilities
     locker_facility = generate_facility_locker()
     garage_facility = generate_facility_garage()
     storage_facility = generate_facility_storage_unit()
