@@ -3,6 +3,16 @@ Transform: AWS::Serverless-2016-10-31
 Description: Payment Stack for Storage Facilities Application
 
 Resources:
+  PaymentsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: PaymentsApi
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET, POST, OPTIONS'"
+        AllowHeaders: "'Content-Type, Authorization'"
+        AllowOrigin: "'*'"
+
   PaymentsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -43,6 +53,7 @@ Resources:
         CreatePayment:
           Type: Api
           Properties:
+            RestApiId: !Ref PaymentsApi
             Path: /payments
             Method: POST
 
@@ -62,6 +73,7 @@ Resources:
         GetPayments:
           Type: Api
           Properties:
+            RestApiId: !Ref PaymentsApi
             Path: /payments
             Method: GET
 
@@ -71,7 +83,6 @@ Outputs:
     Value: !Ref PaymentsTable
     Export:
       Name: PaymentsTableName
-
   PaymentsApiEndpoint:
     Description: API Gateway Endpoint for Payments
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/payments'
+    Value: !Sub 'https://${PaymentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/payments'

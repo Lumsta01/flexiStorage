@@ -1,8 +1,8 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "storage-app"
+stack_name = "storage-app-payments"
 resolve_s3 = true
-s3_prefix = "storage-app"
+s3_prefix = "storage-app-payments"
 region = "eu-west-1"
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
