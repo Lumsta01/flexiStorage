@@ -7,6 +7,6 @@ architecture = "x86_64"
 handler = "payment_handler.process_payment"
 manifest_hash = ""
 packagetype = "Zip"
-functions = ["ProcessPaymentFunction", "GetPaymentsFunction"]
+functions = ["ProcessPaymentFunction"]
 
 [layer_build_definitions]

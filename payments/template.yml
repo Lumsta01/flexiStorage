@@ -1,18 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Payment Stack for Storage Facilities Application
+Description: Payment Service for Storage Facilities
 
 Resources:
-  PaymentsApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      Name: PaymentsApi
-      StageName: Prod
-      Cors:
-        AllowMethods: "'GET, POST, OPTIONS'"
-        AllowHeaders: "'Content-Type, Authorization'"
-        AllowOrigin: "'*'"
-
   PaymentsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -25,30 +15,38 @@ Resources:
       KeySchema:
         - AttributeName: payment_id
           KeyType: HASH
+        - AttributeName: facility_id
+          KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
-      GlobalSecondaryIndexes:
-        - IndexName: FacilityIdIndex
-          KeySchema:
-            - AttributeName: facility_id
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
+
+  PaymentsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowMethods: "'OPTIONS,GET,POST,DELETE'"
+        AllowOrigin: "'*'"
+        AllowCredentials: false
 
   ProcessPaymentFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./
-      Handler: payment_handler.process_payment
+      Handler: payments_handler.lambda_handler
       Runtime: python3.9
       Environment:
         Variables:
           PAYMENTS_TABLE: !Ref PaymentsTable
-          FACILITIES_TABLE: !ImportValue FacilitiesTableName
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref PaymentsTable
-        - DynamoDBReadPolicy:
-            TableName: !ImportValue FacilitiesTableName
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:GetItem
+                - dynamodb:Scan
+              Resource: !GetAtt PaymentsTable.Arn
       Events:
         CreatePayment:
           Type: Api
@@ -56,33 +54,23 @@ Resources:
             RestApiId: !Ref PaymentsApi
             Path: /payments
             Method: POST
-
-  GetPaymentsFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./
-      Handler: payment_handler.get_payments
-      Runtime: python3.9
-      Environment:
-        Variables:
-          PAYMENTS_TABLE: !Ref PaymentsTable
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref PaymentsTable
-      Events:
         GetPayments:
           Type: Api
           Properties:
             RestApiId: !Ref PaymentsApi
             Path: /payments
             Method: GET
+        CancelPayment:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PaymentsApi
+            Path: /payments/{payment_id}
+            Method: DELETE
 
 Outputs:
   PaymentsTableName:
-    Description: DynamoDB Payments Table Name
     Value: !Ref PaymentsTable
-    Export:
-      Name: PaymentsTableName
-  PaymentsApiEndpoint:
-    Description: API Gateway Endpoint for Payments
-    Value: !Sub 'https://${PaymentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/payments'
+    Description: Name of the DynamoDB table for payments.
+  PaymentsApiUrl:
+    Value: !Sub "https://${PaymentsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/payments"
+    Description: URL for the Payment API
